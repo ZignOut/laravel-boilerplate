@@ -41,6 +41,10 @@ class MakeRepositoryCommand extends GeneratorCommand
 
         $path = $this->getPath($name);
 
+        $providerPath = app_path('Providers/RepositoryServiceProvider.php');
+        $search = '//newline';
+        $replace = '$this->app->bind(' . $this->argument('name') . 'RepositoryInterface::class, ' . $this->argument('name') . 'Repository::class);'.PHP_EOL.'        //newline';
+
         // First we will check to see if the class already exists. If it does, we don't want
         // to create the class and overwrite the user's code. So, we will bail out so the
         // code is untouched. Otherwise, we will continue generating this class' files.
@@ -64,6 +68,8 @@ class MakeRepositoryCommand extends GeneratorCommand
         $this->call('make:repository:interface', [
             'name' => $this->argument('name'),
         ]);
+
+        file_put_contents($providerPath, str_replace($search, $replace, file_get_contents($providerPath)));
     }
 
     /**
